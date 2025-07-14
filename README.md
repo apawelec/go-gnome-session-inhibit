@@ -1,0 +1,1 @@
+Library is really simple - please just see included example. I've written it for use in my other tools in which I need to prevent OS from sleeping while performing some time-consuming actions, but may be useful for other folks ;).
