@@ -34,7 +34,11 @@ func Acquire(appId string, reason string, flags InhibitFlag, opts ...Option) (*A
 	return &AcquiredInhibit{cookie: cookie}, nil
 }
 
-func (i AcquiredInhibit) Release(opts ...Option) error {
+func (i *AcquiredInhibit) Release(opts ...Option) error {
+	if i.cookie == 0 {
+		return nil
+	}
+
 	options, err := readOptions(opts)
 	if err != nil {
 		return fmt.Errorf("error while reading options: %w", err)
@@ -45,6 +49,6 @@ func (i AcquiredInhibit) Release(opts ...Option) error {
 	if result := gnomeSession.Call("org.gnome.SessionManager.Uninhibit", 0, i.cookie); result.Err != nil {
 		return fmt.Errorf("error while calling Uninhibit method: %w", result.Err)
 	}
-
+	i.cookie = 0
 	return nil
 }
