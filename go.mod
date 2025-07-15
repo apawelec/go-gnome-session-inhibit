@@ -1,4 +1,4 @@
-module github.com/apawelec/go-session-inhibit
+module github.com/apawelec/go-gnome-session-inhibit
 
 go 1.24
 

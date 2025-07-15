@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/apawelec/go-session-inhibit/inhibit"
+	"github.com/apawelec/go-gnome-session-inhibit/inhibit"
 )
 
 func main() {
