@@ -4,18 +4,18 @@ import (
 	"fmt"
 )
 
-type InhibitFlag uint
+type InhibitFlag uint32
 
 const (
-	Logout     InhibitFlag = 1
-	SwitchUser InhibitFlag = 2
-	Suspend    InhibitFlag = 4
-	Idle       InhibitFlag = 8
-	Automount  InhibitFlag = 16
+	Logout InhibitFlag = 1 << iota
+	SwitchUser
+	Suspend
+	Idle
+	Automount
 )
 
 type AcquiredInhibit struct {
-	cookie uint
+	cookie uint32
 }
 
 func Acquire(appId string, reason string, flags InhibitFlag, opts ...Option) (*AcquiredInhibit, error) {
@@ -26,8 +26,16 @@ func Acquire(appId string, reason string, flags InhibitFlag, opts ...Option) (*A
 
 	gnomeSession := options.gnomeSessionObject()
 
-	var cookie uint
-	if err = gnomeSession.Call("org.gnome.SessionManager.Inhibit", 0, appId, uint(0), reason, flags).Store(&cookie); err != nil {
+	var cookie uint32
+	if err = gnomeSession.CallWithContext(
+		options.ctx,
+		"org.gnome.SessionManager.Inhibit",
+		0,
+		appId,
+		uint32(0),
+		reason,
+		flags,
+	).Store(&cookie); err != nil {
 		return nil, fmt.Errorf("error while calling Inhibit method: %w", err)
 	}
 
@@ -46,7 +54,12 @@ func (i *AcquiredInhibit) Release(opts ...Option) error {
 
 	gnomeSession := options.gnomeSessionObject()
 
-	if result := gnomeSession.Call("org.gnome.SessionManager.Uninhibit", 0, i.cookie); result.Err != nil {
+	if result := gnomeSession.CallWithContext(
+		options.ctx,
+		"org.gnome.SessionManager.Uninhibit",
+		0,
+		i.cookie,
+	); result.Err != nil {
 		return fmt.Errorf("error while calling Uninhibit method: %w", result.Err)
 	}
 	i.cookie = 0
