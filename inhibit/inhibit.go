@@ -27,8 +27,7 @@ func Acquire(appId string, reason string, flags InhibitFlag, opts ...Option) (*A
 	gnomeSession := options.gnomeSessionObject()
 
 	var cookie uint32
-	if err = gnomeSession.CallWithContext(
-		options.ctx,
+	if err = gnomeSession.Call(
 		"org.gnome.SessionManager.Inhibit",
 		0,
 		appId,
@@ -54,8 +53,7 @@ func (i *AcquiredInhibit) Release(opts ...Option) error {
 
 	gnomeSession := options.gnomeSessionObject()
 
-	if result := gnomeSession.CallWithContext(
-		options.ctx,
+	if result := gnomeSession.Call(
 		"org.gnome.SessionManager.Uninhibit",
 		0,
 		i.cookie,

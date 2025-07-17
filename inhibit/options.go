@@ -1,7 +1,6 @@
 package inhibit
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/godbus/dbus/v5"
@@ -9,7 +8,6 @@ import (
 
 type options struct {
 	bus *dbus.Conn
-	ctx context.Context
 }
 
 type Option func(o *options)
@@ -20,16 +18,8 @@ func WithBus(bus *dbus.Conn) Option {
 	}
 }
 
-func WithContext(ctx context.Context) Option {
-	return func(o *options) {
-		o.ctx = ctx
-	}
-}
-
 func readOptions(opts []Option) (options, error) {
-	options := options{
-		ctx: context.Background(),
-	}
+	options := options{}
 	for _, o := range opts {
 		o(&options)
 	}
